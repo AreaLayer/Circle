@@ -3,6 +3,7 @@ import type { BigNumber } from "ethers";
 import multibase from 'multibase';
 import multihashes from 'multihashes';
 import EthersSafe from "@gnosis.pm/safe-core-sdk";
+import type { SafeSignature } from "@gnosis.pm/safe-core-sdk-types";
 import type { Config } from '@app/config';
 import { assert } from '@app/error';
 import type { Registration } from "@app/base/registrations/registrar";
@@ -309,4 +310,19 @@ export async function proposeSafeTransaction(
     safeTxHash,
     signature
   );
+}
+
+// Sign a Gnosis Safe multi-sig transaction.
+export async function signSafeTransaction(
+  safeTxHash: string,
+  safeAddress: string,
+  config: Config
+): Promise<SafeSignature> {
+  assert(config.signer);
+
+  // TODO: This should be created for each Org instantiated.
+  const safeSdk = await EthersSafe.create({
+    ethers, safeAddress, providerOrSigner: config.signer,
+  });
+  return await safeSdk.signTransactionHash(safeTxHash);
 }

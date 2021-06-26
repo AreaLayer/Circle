@@ -6,7 +6,7 @@ import { OperationType } from "@gnosis.pm/safe-core-sdk-types";
 import { assert } from '@app/error';
 import * as utils from '@app/utils';
 import type { Config } from '@app/config';
-import type { Project } from '@app/project';
+import type { Project, PendingProject } from '@app/project';
 
 const GetProjects = `
   query GetProjects($org: ID!) {
@@ -49,15 +49,49 @@ const GetOrgsByOwner = `
   }
 `;
 
+export interface Safe {
+  address: string;
+  owners: string[];
+  threshold: number;
+}
+
+export interface PendingAnchor {
+  type: "pending";
+  confirmations: number;
+  threshold: number;
+  orgAddress: string;
+  projectId: string;
+  commitHash: string;
+}
+
+export function parseAnchorTx(data: string, config: Config): Project | undefined {
+  const iface = new ethers.utils.Interface(config.abi.org);
+  const parsedTx = iface.parseTransaction({ data });
+
+  if (parsedTx.name === "anchor") {
+    const encodedProjectUrn = parsedTx.args[0];
+    const encodedCommitHash = parsedTx.args[2];
+    const id = utils.formatRadicleId(
+      ethers.utils.arrayify(`${encodedProjectUrn}`)
+    );
+    const byteArray = ethers.utils.arrayify(encodedCommitHash);
+    const stateHash = utils.formatProjectHash(byteArray);
+
+    return { id, anchor: { stateHash } };
+  }
+}
+
 export class Org {
   address: string;
   owner: string;
+  safe?: Safe;
 
-  constructor(address: string, owner: string) {
+  constructor(address: string, owner: string, safe?: Safe) {
     assert(ethers.utils.isAddress(address), "address must be valid");
 
     this.address = address.toLowerCase(); // Don't store address checksum.
     this.owner = owner;
+    this.safe = safe;
   }
 
   async lookupAddress(config: Config): Promise<string> {
@@ -117,12 +151,20 @@ export class Org {
     return org.setOwner(address);
   }
 
-  async getMembers(config: Config): Promise<Array<string>> {
-    const safe = await utils.getSafe(this.owner, config);
+  async getMembers(config: Config): Promise<string[]> {
+    if (this.safe) return this.safe.owners;
+
+    const safe = await this.getSafe(config);
     if (safe) {
       return safe.owners;
     }
     return [];
+  }
+
+  async getSafe(config: Config): Promise<any> {
+    if (this.safe) return this.safe;
+
+    return await utils.getSafe(this.owner, config);
   }
 
   async isMember(address: string, config: Config): Promise<boolean> {
@@ -130,7 +172,7 @@ export class Org {
     return members.includes(ethers.utils.getAddress(address));
   }
 
-  async getProjects(config: Config): Promise<Array<Project>> {
+  async getProjects(config: Config): Promise<Project[]> {
     const result = await utils.querySubgraph(
       config.orgs.subgraph, GetProjects, { org: this.address }
     );
@@ -154,6 +196,40 @@ export class Org {
     return projects;
   }
 
+  async getPendingProjects(config: Config): Promise<PendingProject[]> {
+    if (! config.safe.client) return [];
+
+    const orgAddr = ethers.utils.getAddress(this.address);
+    const response = await config.safe.client.getPendingTransactions(
+      ethers.utils.getAddress(this.owner)
+    );
+    const projects: PendingProject[] = [];
+    console.log(response);
+
+    for (const tx of response.results || []) {
+      if (tx.data && tx.to === orgAddr) {
+        const project = parseAnchorTx(tx.data, config);
+        const confirmations = tx.confirmations?.map(t => t.owner) || [];
+
+        if (project) {
+          projects.push({ ...project, confirmations, safeTxHash: tx.safeTxHash });
+        }
+      }
+    }
+    return projects;
+  }
+
+  async getAllProjects(config: Config): Promise<Array<Project | PendingProject>> {
+    const result = await Promise.allSettled([
+      this.getPendingProjects(config),
+      this.getProjects(config),
+    ]);
+
+    return result.flatMap(r => {
+      return r.status === "fulfilled" ? r.value : [];
+    });
+  }
+
   static async getAnchor(orgAddr: string, urn: string, config: Config): Promise<string | null> {
     const org = new ethers.Contract(
       orgAddr,
@@ -162,6 +238,8 @@ export class Org {
     );
     const unpadded = utils.parseRadicleId(urn);
     const id = ethers.utils.zeroPad(unpadded, 32);
+
+    console.log("getAnchor", orgAddr, urn);
 
     try {
       const [,hash] = await org.anchors(id);
@@ -213,7 +291,8 @@ export class Org {
     try {
       const owner = await org.owner();
       const resolved = await org.resolvedAddress;
-      return new Org(resolved, owner);
+      const safe = await utils.getSafe(owner, config);
+      return new Org(resolved, owner, safe || undefined);
     } catch (e) {
       console.error(e);
       return null;

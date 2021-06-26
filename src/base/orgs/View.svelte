@@ -14,12 +14,11 @@
   import Icon from '@app/Icon.svelte';
   import Blockies from '@app/Blockies.svelte';
   import SetName from '@app/ens/SetName.svelte';
-  import Project from '@app/base/projects/Widget.svelte';
   import Address from '@app/Address.svelte';
-  import Message from '@app/Message.svelte';
   import * as utils from '@app/utils';
 
   import { Org } from './Org';
+  import Projects from './View/Projects.svelte';
   import TransferOwnership from './TransferOwnership.svelte';
 
   export let address: string;
@@ -46,6 +45,11 @@
   };
 
   $: label = name && parseEnsLabel(name, config);
+  $: isMember = (org: Org): Promise<boolean> => {
+    return $session && $session.address
+      ? org.isMember($session.address, config)
+      : Promise.resolve(false);
+  };
   $: isOwner = (org: Org): boolean => $session
     ? utils.isAddressEqual(org.owner, $session.address)
     : false;
@@ -54,7 +58,7 @@
       if (isOwner(org)) {
         return true;
       }
-      return await org.isMember($session.address, config);
+      return await isMember(org);
     }
     return false;
   };
@@ -110,12 +114,6 @@
   .url {
     display: flex; /* Ensures correct vertical positioning of icons */
     margin-right: 1rem;
-  }
-  .projects {
-    margin-top: 2rem;
-  }
-  .projects .project {
-    margin-bottom: 1rem;
   }
   .members {
     margin-top: 2rem;
@@ -231,21 +229,7 @@
         {/await}
       </div>
 
-      <div class="projects">
-        {#await org.getProjects(config)}
-          <Loading center />
-        {:then projects}
-          {#each projects as project}
-            <div class="project">
-              <Project {project} org={org.address} {config} />
-            </div>
-          {/each}
-        {:catch err}
-          <Message error>
-            <strong>Error: </strong> failed to load projects: {err.message}.
-          </Message>
-        {/await}
-      </div>
+      <Projects {org} {config} {isMember} session={$session} />
     </main>
   {:else}
     <Modal subtle>

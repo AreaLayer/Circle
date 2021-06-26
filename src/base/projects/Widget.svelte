@@ -16,6 +16,7 @@
   export let project: proj.Project;
   export let config: Config;
   export let org: string | undefined;
+  export let faded = false;
 
   let state: State = { status: Status.Loading };
   let info: proj.Info | null = null;
@@ -49,11 +50,17 @@
     border: 1px solid var(--color-secondary-faded);
     border-radius: 0.25rem;
   }
+  article.project-faded {
+    border: 1px dashed var(--color-foreground-subtle);
+  }
   article.has-info {
     cursor: pointer;
   }
   article.has-info:hover {
     border-color: var(--color-secondary);
+  }
+  article.project-faded.has-info:hover {
+    border-color: var(--color-foreground-faded);
   }
   article .id {
     font-size: 1rem;
@@ -61,13 +68,21 @@
     margin-bottom: 0.5rem;
   }
   article .description {
-    margin-bottom: 0.75rem;
     font-size: 0.75rem;
+    margin-bottom: 0.25rem;
   }
   article .anchor {
     color: var(--color-secondary);
     font-size: 0.75rem;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+  }
+  article .commit, article .actions {
     font-family: var(--font-family-monospace);
+  }
+  article.project-faded .anchor {
+    color: var(--color-foreground-faded);
   }
   article .id, article .anchor {
     display: flex;
@@ -94,20 +109,22 @@
   }
 </style>
 
-<article on:click={onClick} class:has-info={info}>
+<article on:click={onClick} class:has-info={info} class:project-faded={faded}>
   {#if info}
     <div class="id">
       <span class="name">{info.meta.name}</span><span class="urn">{project.id}</span>
     </div>
     <div class="description">{info.meta.description}</div>
     <div class="anchor">
-      <span>commit {project.anchor.stateHash}</span>
-      <span>
-        {#each info.meta.maintainers as urn}
-          <span class="avatar">
-            <Blockies address={urn} />
-          </span>
-        {/each}
+      <span class="commit">commit {project.anchor.stateHash}</span>
+      <span class="actions">
+        <slot name="actions">
+          {#each info.meta.maintainers as urn}
+            <span class="avatar">
+              <Blockies address={urn} />
+            </span>
+          {/each}
+        </slot>
       </span>
     </div>
   {:else}
@@ -117,6 +134,12 @@
         <Loading small />
       {/if}
     </div>
-    <div class="anchor">commit {project.anchor.stateHash}</div>
+    <div class="anchor">
+      <span class="commit">commit {project.anchor.stateHash}</span>
+      <span class="actions">
+        <slot name="actions">
+        </slot>
+      </span>
+    </div>
   {/if}
 </article>

@@ -208,9 +208,11 @@ button.small {
 	min-width: 6rem;
 }
 button.tiny {
+	font-size: 0.875rem;
 	min-width: 0;
 	padding: 0 0.75rem;
-	height: 2rem;
+	height: 1.875rem;
+	/* height: 2rem; */
 }
 
 a {
@@ -335,6 +337,10 @@ label.input {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+}
+
+.no-margin {
+	margin: 0;
 }
 
 span.small, .text-small {
