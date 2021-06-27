@@ -45,7 +45,7 @@
           <Widget {project} org={org.address} {config} faded>
             <span slot="actions">
               {#if org.safe && session}
-                <Anchor {project} safe={org.safe} {session} />
+                <Anchor {project} safe={org.safe} {session} {config} />
               {/if}
             </span>
           </Widget>

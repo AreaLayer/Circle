@@ -314,8 +314,8 @@ export async function proposeSafeTransaction(
 
 // Sign a Gnosis Safe multi-sig transaction.
 export async function signSafeTransaction(
-  safeTxHash: string,
   safeAddress: string,
+  safeTxHash: string,
   config: Config
 ): Promise<SafeSignature> {
   assert(config.signer);
