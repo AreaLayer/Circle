@@ -25,8 +25,10 @@
     ? Profile.getMulti(config.users.pinned, config)
     : Promise.resolve([]);
 
+  const seeds = Object.keys(config.seeds.pinned)
+    .map(host => { return { host, port: config.seed.api.port }; });
   const getSeeds = Object.keys(config.seeds.pinned).length > 0
-    ? Seed.lookupMulti(Object.keys(config.seeds.pinned), config)
+    ? Seed.lookupMulti(seeds, config)
     : Promise.resolve([]);
 
   const getEntities = Promise.all([getUsers, getOrgs, getSeeds]).then(([users, orgs, seeds]) => {

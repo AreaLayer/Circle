@@ -17,6 +17,8 @@
   export let path: string;
   export let members: string[] = [];
 
+  const seedLabel: string | null = seed && seed.host.host;
+
   let numberOfProjects: number | null = null;
 
   onMount(async () => {
@@ -101,8 +103,8 @@
         {:else}
           {formatAddress(profile.address)}
         {/if}
-      {:else if seed}
-        {seed.host}
+      {:else if seedLabel}
+        {seedLabel}
       {/if}
     </div>
     <div class="card-members">

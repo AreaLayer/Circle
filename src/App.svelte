@@ -107,7 +107,11 @@
         </span>
 
         <span slot="body">
-          {err}
+          {#if typeof(err) === "string"}
+            {err}
+          {:else if err.message}
+            {err.message}
+          {/if}
         </span>
       </Modal>
     </div>
