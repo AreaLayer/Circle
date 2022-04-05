@@ -8,3 +8,8 @@ coverage
 
 # Integration Tests
 cypress/screenshots
+cypress/downloads
+
+# Svelte Kit
+/.svelte-kit
+/package
