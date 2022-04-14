@@ -108,12 +108,12 @@ export class Seed {
     return result.map((project: proj.ProjectInfo) => ({ ...project, id: project.urn }));
   }
 
-  static async getPeer({ host, port }: api.Host): Promise<{ id: string }> {
-    return api.get("/peer", {}, { host, port });
+  static async getPeer(host: api.Host): Promise<{ id: string }> {
+    return api.get("/peer", host);
   }
 
-  static async getInfo({ host, port }: api.Host): Promise<{ version: string }> {
-    return api.get("/", {}, { host, port });
+  static async getInfo(host: api.Host): Promise<{ version: string }> {
+    return api.get("/", host);
   }
 
   static async lookup(hostname: string, cfg: Config): Promise<Seed> {

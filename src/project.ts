@@ -250,7 +250,7 @@ export class Project implements ProjectInfo {
   }
 
   static async getInfo(nameOrUrn: string, host: api.Host): Promise<ProjectInfo> {
-    const info = await api.get(`projects/${nameOrUrn}`, {}, host);
+    const info = await api.get(`projects/${nameOrUrn}`, host);
 
     return {
       ...info,
@@ -259,19 +259,19 @@ export class Project implements ProjectInfo {
   }
 
   static async getProjects(host: api.Host): Promise<ProjectInfo[]> {
-    return api.get("projects", {}, host);
+    return api.get("projects", host);
   }
 
   static async getDelegateProjects(delegate: string, host: api.Host): Promise<ProjectInfo[]> {
-    return api.get(`delegates/${delegate}/projects`, {}, host);
+    return api.get(`delegates/${delegate}/projects`, host);
   }
 
   static async getRemote(urn: string, peer: string, host: api.Host): Promise<Remote> {
-    return api.get(`projects/${urn}/remotes/${peer}`, {}, host);
+    return api.get(`projects/${urn}/remotes/${peer}`, host);
   }
 
   static async getRemotes(urn: string, host: api.Host): Promise<Peer[]> {
-    return api.get(`projects/${urn}/remotes`, {}, host);
+    return api.get(`projects/${urn}/remotes`, host);
   }
 
   static async getCommits(
@@ -294,11 +294,11 @@ export class Project implements ProjectInfo {
       "page": opts?.page,
       "verified": opts?.verified
     };
-    return api.get(`projects/${urn}/commits`, params, host);
+    return api.get(`projects/${urn}/commits`, host, params);
   }
 
   async getCommit(commit: string): Promise<Commit> {
-    return api.get(`projects/${this.urn}/commits/${commit}`, {}, this.seed.api);
+    return api.get(`projects/${this.urn}/commits/${commit}`, this.seed.api);
   }
 
   async getTree(
@@ -306,7 +306,7 @@ export class Project implements ProjectInfo {
     path: string,
   ): Promise<Tree> {
     if (path === "/") path = "";
-    return api.get(`projects/${this.urn}/tree/${commit}/${path}`, {}, this.seed.api);
+    return api.get(`projects/${this.urn}/tree/${commit}/${path}`, this.seed.api);
   }
 
   async getBlob(
@@ -314,13 +314,13 @@ export class Project implements ProjectInfo {
     path: string,
     options: { highlight: boolean },
   ): Promise<Blob> {
-    return api.get(`projects/${this.urn}/blob/${commit}/${path}`, options, this.seed.api);
+    return api.get(`projects/${this.urn}/blob/${commit}/${path}`, this.seed.api, options);
   }
 
   async getReadme(
     commit: string,
   ): Promise<Blob> {
-    return api.get(`projects/${this.urn}/readme/${commit}`, {}, this.seed.api);
+    return api.get(`projects/${this.urn}/readme/${commit}`, this.seed.api);
   }
 
   navigateTo(browse: BrowseTo): void {
