@@ -331,6 +331,13 @@ export function parseRadicleId(urn: string): string {
   return urn.replace(/^rad:[a-z]+:/, "");
 }
 
+// Get amount of days passed between two dates without including the end date
+export function getDaysPassed(from: Date, to: Date): number {
+  return Math.floor(
+    (to.getTime() - from.getTime()) / (24 * 60 * 60 * 1000)
+  );
+}
+
 // Decode a Radicle Id (URN).
 export function decodeRadicleId(urn: string): Uint8Array {
   const encoded = parseRadicleId(urn);

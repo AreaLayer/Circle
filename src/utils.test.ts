@@ -274,3 +274,15 @@ describe("Parse Strings", () => {
     ).toEqual(expected);
   });
 });
+
+describe("Date Manipulation", () => {
+  test.each([
+    { from: new Date("2022-01-01"), to: new Date("2022-02-01"), expected: 31 },
+    { from: new Date("2022-01-01"), to: new Date("2022-01-02"), expected: 1 },
+    { from: new Date("2022-01-01"), to: new Date("2022-01-01"), expected: 0 },
+  ])("getDaysPassed", ({ from, to, expected }) => {
+    expect(
+      utils.getDaysPassed(from, to)
+    ).toEqual(expected);
+  });
+});
