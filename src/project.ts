@@ -19,6 +19,15 @@ export interface Anchor {
   };
 }
 
+export interface Patch {
+  id: string;
+  peer: Peer;
+  identity: Peer | null;
+  message: string;
+  commit: string;
+  mergeBase: string;
+}
+
 export interface PendingAnchor {
   confirmed: false;
   id: string;
@@ -34,6 +43,7 @@ export enum ProjectContent {
   Tree,
   History,
   Commit,
+  Patches,
 }
 
 export interface ProjectInfo {
@@ -156,6 +166,10 @@ export function path(opts: PathOptions): string {
       result.push("commits");
       break;
 
+    case ProjectContent.Patches:
+      result.push("patches");
+      break;
+
     default:
       result.push("tree");
       break;
@@ -268,6 +282,10 @@ export class Project implements ProjectInfo {
 
   static async getRemote(urn: string, peer: string, host: api.Host): Promise<Remote> {
     return api.get(`projects/${urn}/remotes/${peer}`, {}, host);
+  }
+
+  static async getPatches(urn: string, host: api.Host): Promise<Patch[]> {
+    return api.get(`projects/${urn}/patches`, {}, host);
   }
 
   static async getRemotes(urn: string, host: api.Host): Promise<Peer[]> {
