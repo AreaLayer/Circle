@@ -12,8 +12,8 @@
   export let config: Config;
 
   setOpenGraphMetaTag([
-    { prop: "og:title", content: "Radicle Interface" },
-    { prop: "og:description", content: "Interact with Radicle" },
+    { prop: "og:title", content: "Circle Interface" },
+    { prop: "og:description", content: "Circle with Radicle" },
     { prop: "og:url", content: window.location.href }
   ]);
 
@@ -82,8 +82,8 @@
 
 <main>
   <div class="blurb">
-    <p>Radicle 🌱 enables developers 🧙 to securely collaborate 🔐 on software over a
-    peer-to-peer network 🌐 built on Git.</p>
+    <p>Circle developers  to securely collaborate on software over a
+    peer-to-peer network built on Git and Lightning Network.</p>
   </div>
 
   {#await getEntities}
@@ -101,7 +101,7 @@
     {/if}
     {#if entities.orgs.length || entities.users.length}
       <div class="heading">
-        Explore <strong>orgs</strong> and <strong>users</strong> on the Radicle network.
+        Explore <strong>orgs</strong> and <strong>users</strong> on the Lightning Network
       </div>
       <Cards {config} profiles={entities.users} orgs={entities.orgs}>
         <div class="empty">There are no orgs or users.</div>
