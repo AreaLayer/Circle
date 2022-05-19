@@ -54,6 +54,8 @@ export interface CommitHeader {
 
 // A set of commits grouped by time.
 export interface CommitGroup {
+  time: string;
+  commits: CommitMetadata[];
   date: string;
   time: number;
   commits: CommitMetadata[];
@@ -89,6 +91,38 @@ export const groupCommitHistory = (
 };
 
 export function groupCommits(commits: { header: CommitHeader; context: CommitContext }[]): CommitGroup[] {
+  const groupedCommits: CommitGroup[] = [];
+  let groupDate: Date | undefined = undefined;
+
+  try {
+    commits = commits.sort((a, b) => {
+      if (a.header.committerTime > b.header.committerTime) {
+        return -1;
+      } else if (a.header.committerTime < b.header.committerTime) {
+        return 1;
+      }
+
+      return 0;
+    });
+
+    for (const commit of commits) {
+      const time = commit.header.committerTime * 1000;
+      const date = new Date(time);
+      const isNewDay =
+        !groupedCommits.length ||
+        !groupDate ||
+        date.getDate() < groupDate.getDate() ||
+        date.getMonth() < groupDate.getMonth() ||
+        date.getFullYear() < groupDate.getFullYear();
+
+      if (isNewDay) {
+        groupedCommits.push({
+          time: formatGroupTime(time),
+          commits: [],
+        });
+        groupDate = date;
+      }
+      groupedCommits[groupedCommits.length - 1].commits.push(commit);
   const groupedCommits: CommitGroup[] = [];
   let groupDate: Date | undefined = undefined;
 
@@ -182,7 +216,9 @@ export function groupCommitsByWeek(commits: CommitMetadata[]): CommitGroup[] {
       groupDate = date;
       weekAccumulator += Math.floor(daysPassed / 7);
     }
-    groupedCommits[groupedCommits.length - 1].commits.push(commit);
+    return groupedCommits;
+  } catch (err) {
+    throw new ApiError("Not able to create commit history, please consider updating seed HTTP API.");
   }
 
   return groupedCommits;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import CommitTeaser from "./Commit/CommitTeaser.svelte";
+  import type { Project } from "@app/project";
   import { Project, ProjectContent } from "@app/project";
   import Loading from "@app/Loading.svelte";
   import { groupCommitHistory, GroupedCommitsHistory } from "@app/commit";
@@ -35,6 +36,7 @@
   .commit-group-headers {
     margin-bottom: 2rem;
   }
+  .commit-group-headers {
 
   .commit {
     background-color: var(--color-foreground-background);
@@ -46,13 +48,16 @@
     background-color: var(--color-foreground-background-lighter);
     cursor: pointer;
   }
-  .commit:first-child {
+  .commit-group-headers:first-child {
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
   }
-  .commit:last-child {
+  .commit-group-headers:last-child {
     border-bottom-left-radius: 0.25rem;
     border-bottom-right-radius: 0.25rem;
+  }
+  .commit-group-headers {
+    background: var(--color-foreground-background-lighter);
   }
 
   @media (max-width: 960px) {
@@ -73,6 +78,7 @@
         </header>
         <div class="commit-group-headers">
           {#each group.commits as commit (commit.header.sha1)}
+            <CommitTeaser {project} {commit} />
             <div class="commit" on:click={() => navigateHistory(commit.header.sha1, ProjectContent.Commit)}>
               <CommitTeaser {commit} on:browseCommit={browseCommit} />
             </div>
