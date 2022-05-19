@@ -5,12 +5,15 @@ export interface Host {
 
 export async function get(
   path: string,
-  params: Record<string, any>,
-  api: Host
+  api: Host,
+  params: Record<string, any> = {},
+  headers: Record<string, any> = { 'Accept': 'application/json' }
 ): Promise<any> {
   const query: Record<string, string> = {};
   for (const [key, val] of Object.entries(params)) {
-    query[key] = val.toString();
+    if (val !== undefined && val !== null) {
+      query[key] = val.toString();
+    }
   }
 
   const base = api.host;
@@ -33,9 +36,95 @@ export async function get(
   try {
     response = await fetch(urlString, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      }
+      headers
+    });
+  } catch (err) {
+    throw new ApiError("API request failed", urlString);
+  }
+
+  if (! response.ok) {
+    throw new ApiError("Not found", urlString);
+  }
+  return response.json();
+}
+
+export async function post(
+  path: string,
+  api: Host,
+  params: Record<string, any> = {},
+  headers: Record<string, any> = { 'Content-Type': 'application/json' },
+): Promise<any> {
+  const body: Record<string, string> = {};
+  for (const [key, val] of Object.entries(params)) {
+    if (val !== undefined && val !== null) {
+      body[key] = val.toString();
+    }
+  }
+
+  const base = api.host;
+  const port = api.port;
+  // Allow using the functionality with local runned http-api
+  const isLocalhost = /^0.0.0.0$/.test(base);
+  const protocol = isLocalhost ? "http://" : "https://";
+
+  path = path.startsWith("/") ? path.slice(1) : path;
+
+  const url = new URL(path
+    ? `${protocol}${base}/v1/${path}`
+    : `${protocol}${base}`);
+  url.port = String(port);
+
+  const urlString = String(url);
+  let response = null;
+  try {
+    response = await fetch(urlString, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers
+    });
+  } catch (err) {
+    throw new ApiError("API request failed", urlString);
+  }
+
+  if (! response.ok) {
+    throw new ApiError("Not found", urlString);
+  }
+  return response.json();
+}
+
+export async function put(
+  path: string,
+  api: Host,
+  params: Record<string, any> = {},
+  headers: Record<string, any> = { 'Content-Type': 'application/json' },
+): Promise<any> {
+  const body: Record<string, string> = {};
+  for (const [key, val] of Object.entries(params)) {
+    if (val !== undefined && val !== null) {
+      body[key] = val.toString();
+    }
+  }
+
+  const base = api.host;
+  const port = api.port;
+  // Allow using the functionality with local runned http-api
+  const isLocalhost = /^0.0.0.0$/.test(base);
+  const protocol = isLocalhost ? "http://" : "https://";
+
+  path = path.startsWith("/") ? path.slice(1) : path;
+
+  const url = new URL(path
+    ? `${protocol}${base}/v1/${path}`
+    : `${protocol}${base}`);
+  url.port = String(port);
+
+  const urlString = String(url);
+  let response = null;
+  try {
+    response = await fetch(urlString, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      headers
     });
   } catch (err) {
     throw new ApiError("API request failed", urlString);

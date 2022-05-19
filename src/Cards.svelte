@@ -55,7 +55,7 @@
     {/each}
 
     {#each seeds as seed}
-      <Card {seed} {config} path={`/seeds/${seed.host}`} />
+      <Card {seed} {config} path={seed.path} />
     {/each}
 
     {#if !orgs.length && !profiles.length && !seeds.length}

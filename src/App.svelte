@@ -16,6 +16,7 @@
   import Header from '@app/Header.svelte';
   import Loading from '@app/Loading.svelte';
   import Modal from '@app/Modal.svelte';
+  import LinearGradient from "@app/LinearGradient.svelte";
 
   const loadConfig = getConfig().then(async cfg => {
     if ($state.connection === Connection.Connected) {
@@ -107,9 +108,15 @@
         </span>
 
         <span slot="body">
-          {err}
+          {#if typeof(err) === "string"}
+            {err}
+          {:else if err.message}
+            {err.message}
+          {/if}
         </span>
       </Modal>
     </div>
   {/await}
+  <!-- Adds a svg linear gradient that can be used by any other svg under the id #gradient -->
+  <LinearGradient id="gradient" />
 </div>

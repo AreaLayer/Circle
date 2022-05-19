@@ -31,7 +31,8 @@
   // Switches between the browser and commit view.
   const toggleContent = (input: ProjectContent) => {
     project.navigateTo({
-      content: content === input ? ProjectContent.Tree : input
+      content: content === input ? ProjectContent.Tree : input,
+      revision: undefined
     });
   };
 
@@ -187,7 +188,7 @@
     {#if seed.api.host}
       <div
         class="stat seed"
-        on:click={() => navigate(`/seeds/${seed.api.host}`)}
+        on:click={() => navigate(seed.path)}
         title="Project data is fetched from this seed"
       >
         <span>{seed.api.host}</span>
@@ -196,6 +197,10 @@
   </span>
   <div class="stat commit-count" class:active={content == ProjectContent.History} on:click={() => toggleContent(ProjectContent.History)}>
     <strong>{tree.stats.commits}</strong> commit(s)
+  </div>
+  <!-- How should we define from which peer we want to show patches? -->
+  <div class="stat commit-count" class:active={content == ProjectContent.Patches} on:click={() => toggleContent(ProjectContent.Patches)}>
+    Patches(s)
   </div>
   <div class="stat contributor-count">
     <strong>{tree.stats.contributors}</strong> contributor(s)
