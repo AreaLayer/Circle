@@ -7,11 +7,13 @@ import { assert } from '@app/error';
 export class InvalidSeed {
   valid: false = false;
 
-  host?: string;
+  host?: api.Host;
   id?: string;
 
   constructor(host?: string, id?: string) {
-    this.host = host;
+    if (host) {
+      this.host = { host, port: null };
+    }
     this.id = id;
   }
 }
@@ -23,11 +25,13 @@ export class Seed {
   git: { host: string; port: number | null };
   link: { host: string; id: string; port: number };
 
+  path: string;
   version?: string;
   emoji: string;
 
   constructor(seed: {
     host: string;
+    port?: number;
     id: string;
     git?: string | null;
     api?: string | null;
@@ -38,7 +42,7 @@ export class Seed {
 
     let api = null;
     let git = null;
-    let apiPort: number | null = cfg.seed.api.port;
+    let apiPort: number | null = seed.port || cfg.seed.api.port;
     let gitPort: number | null = cfg.seed.git.port;
 
     if (seed.api) {
@@ -82,14 +86,18 @@ export class Seed {
     if (seed.version) {
       this.version = seed.version;
     }
+
+    this.path = this.api.port === cfg.seed.api.port
+      ? `/seeds/${this.api.host}`
+      : `/seeds/${this.api.host}/${this.api.port}`;
   }
 
   get id(): string {
     return this.link.id;
   }
 
-  get host(): string {
-    return this.api.host;
+  get host(): api.Host {
+    return { host: this.api.host, port: this.api.port };
   }
 
   async getPeer(): Promise<{ id: string }> {
@@ -108,29 +116,33 @@ export class Seed {
     return result.map((project: proj.ProjectInfo) => ({ ...project, id: project.urn }));
   }
 
-  static async getPeer({ host, port }: api.Host): Promise<{ id: string }> {
-    return api.get("/peer", {}, { host, port });
+  static async getPeer(host: api.Host): Promise<{ id: string }> {
+    return api.get("/peer", host);
   }
 
-  static async getInfo({ host, port }: api.Host): Promise<{ version: string }> {
-    return api.get("/", {}, { host, port });
+  static async getInfo(host: api.Host): Promise<{ version: string }> {
+    return api.get("/", host);
   }
 
-  static async lookup(hostname: string, cfg: Config): Promise<Seed> {
-    const host = { host: hostname, port: cfg.seed.api.port };
+  static async lookup(host: api.Host, cfg: Config): Promise<Seed> {
     const [info, peer] = await Promise.all([
       Seed.getInfo(host),
       Seed.getPeer(host),
     ]);
 
-    return new Seed({
-      host: hostname,
+    const settings: any = {
+      host: host.host,
       id: peer.id,
       version: info.version,
-    }, cfg);
+    };
+
+    if (host.port) {
+      settings.port = host.port;
+    }
+    return new Seed(settings, cfg);
   }
 
-  static async lookupMulti(hostnames: string[], cfg: Config): Promise<Seed[]> {
-    return await Promise.all(hostnames.map(h => Seed.lookup(h, cfg)));
+  static async lookupMulti(hosts: api.Host[], cfg: Config): Promise<Seed[]> {
+    return await Promise.all(hosts.map(h => Seed.lookup(h, cfg)));
   }
 }

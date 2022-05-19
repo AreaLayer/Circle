@@ -53,7 +53,7 @@
     <div slot="subtitle">
       <div class="text-small">
         WalletConnect<br/>
-        <a href="https://walletconnect.com/registry/wallets" class="link">
+        <a href="https:albyget.com/registry/wallets" class="link">
           View compatible wallets
         </a>
       </div>
@@ -68,8 +68,8 @@
     </div>
 
     <div slot="actions">
-      <button class="secondary tiny text-small" on:click={onClickConnect} disabled={!config.metamask.signer}>
-        Connect with Metamask
+      <button class="secondary tiny text-small" on:click={onClickConnect} disabled={!config.getalby.signer}>
+        Connect with Lightning login
       </button>
       <button class="text tiny text-small" on:click={onClose}>
         Close

@@ -92,7 +92,6 @@ export class Profile {
     else return undefined;
   }
 
-  // We add null here to differentiate between a `undefined` and a invalid / null seed
   get seed(): Seed | InvalidSeed | null {
     return this.profile?.ens?.seed ?? null;
   }

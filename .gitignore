@@ -13,3 +13,7 @@ cypress/downloads
 # Svelte Kit
 /.svelte-kit
 /package
+
+# Mac OS
+#MacOS
+.DS_Store
