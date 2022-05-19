@@ -13,6 +13,7 @@
   import Browser from "./Browser.svelte";
   import Commit from "./Commit.svelte";
   import History from "./History.svelte";
+  import Patches from './Patches.svelte';
 
   export let peer: string | null = null;
   export let config: Config;
@@ -146,6 +147,8 @@
       <History {project} {commit} />
     {:else if content == proj.ProjectContent.Commit}
       <Commit {project} {commit} />
+    {:else if content == proj.ProjectContent.Patches}
+      <Patches {project} />
     {/if}
   {:catch err}
     <div class="container center-content">

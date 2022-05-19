@@ -229,7 +229,7 @@
       <!-- Seed Address -->
       {#if profile.seed && profile.seed.valid}
         <div class="label">Seed</div>
-        <SeedAddress seed={profile.seed} port={config.seed.link.port} />
+        <SeedAddress seed={profile.seed} {config} />
       {/if}
       <!-- Address -->
       <div class="label">Address</div>

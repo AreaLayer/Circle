@@ -27,6 +27,7 @@
   const signIn = async (seed: Seed) => {
     await signInWithEthereum(seed, config);
   };
+  export let port: number | null = config.seed.api.port;
 </script>
 
 <style>
@@ -90,7 +91,7 @@
   <title>{host}</title>
 </svelte:head>
 
-{#await Seed.lookup(host, config)}
+{#await Seed.lookup({ host, port }, config)}
   <main class="off-centered">
     <Loading center />
   </main>
@@ -109,7 +110,7 @@
     <div class="fields">
       <!-- Seed Address -->
       <div class="label">Address</div>
-      <SeedAddress {seed} port={seed.link.port} />
+      <SeedAddress {seed} {config} />
       <!-- Seed ID -->
       <div class="label">Seed ID</div>
       <div>{formatSeedId(seed.id)} <Clipboard small text={seed.id} /></div>

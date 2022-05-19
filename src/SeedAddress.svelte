@@ -1,11 +1,15 @@
 <script lang="ts">
   import { formatSeedAddress, formatSeedId } from "@app/utils";
+  import type { Config } from "@app/config";
   import type { Seed } from "@app/base/seeds/Seed";
   import Clipboard from "@app/Clipboard.svelte";
 
   export let seed: Seed;
-  export let port: number;
+  export let config: Config;
   export let full = false;
+
+  const hostname = seed.host.host;
+  const linkPort = config.seed.link.port;
 </script>
 
 <style>
@@ -29,12 +33,12 @@
   <div class="seed-address">
     <span class="seed-icon">{seed.emoji}</span>
     {#if full}
-      <span><a href="/seeds/{seed.host}" class="link">{formatSeedId(seed.id)}@{seed.host}</a></span>
-      <span class="faded">:{port}</span>
+      <span><a href={seed.path} class="link">{formatSeedId(seed.id)}@{hostname}</a></span>
+      <span class="faded">:{linkPort}</span>
     {:else}
-      <span><a href="/seeds/{seed.host}" class="link">{seed.host}</a></span>
+      <span><a href={seed.path} class="link">{seed.host.host}</a></span>
     {/if}
   </div>
-  <Clipboard small text={full ? formatSeedAddress(seed.id, seed.host, port) : seed.host} />
+  <Clipboard small text={full ? formatSeedAddress(seed.id, hostname, linkPort) : hostname} />
 </div>
 <div class="desktop"/>

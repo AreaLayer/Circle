@@ -1,6 +1,7 @@
 import type { Stats, Person } from "@app/project";
 import type { Diff } from "@app/diff";
 import { ApiError } from "@app/api";
+import { getDaysPassed } from "@app/utils";
 
 export interface CommitsHistory {
   headers: CommitMetadata[];
@@ -69,6 +70,7 @@ export interface Commit {
   stats: CommitStats;
   diff: Diff;
   branches: string[];
+  context: CommitContext;
 }
 
 export function formatGroupTime(timestamp: number): string {
@@ -129,7 +131,10 @@ export function groupCommits(commits: { header: CommitHeader; context: CommitCon
 }
 
 export const formatCommitTime = (t: number): string => {
-  return new Date(t * 1000).toUTCString();
+  const options: any = {
+    hour: "2-digit", minute: "2-digit", timeZoneName: "short", hour12: false
+  };
+  return new Date(t * 1000).toLocaleTimeString("en-us", options);
 };
 
 export function groupCommitsByWeek(commits: CommitMetadata[]): CommitGroup[] {
@@ -181,11 +186,4 @@ export function groupCommitsByWeek(commits: CommitMetadata[]): CommitGroup[] {
   }
 
   return groupedCommits;
-}
-
-// Get amount of days passed between two dates
-function getDaysPassed(from: Date, to: Date): number {
-  return Math.floor(
-    (to.getTime() - from.getTime()) / (24 * 60 * 60 * 1000)
-  );
 }

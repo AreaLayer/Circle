@@ -19,6 +19,15 @@ export interface Anchor {
   };
 }
 
+export interface Patch {
+  id: string;
+  peer: Peer;
+  identity: Peer | null;
+  message: string;
+  commit: string;
+  mergeBase: string;
+}
+
 export interface PendingAnchor {
   confirmed: false;
   id: string;
@@ -34,6 +43,7 @@ export enum ProjectContent {
   Tree,
   History,
   Commit,
+  Patches,
 }
 
 export interface ProjectInfo {
@@ -124,7 +134,7 @@ export interface BrowseTo {
 export interface PathOptions extends BrowseTo {
   urn: string;
   profile?: string | null;
-  seed?: string | null;
+  seed?: api.Host | null;
 }
 
 export function browse(browse: BrowseTo): void {
@@ -139,7 +149,11 @@ export function path(opts: PathOptions): string {
   if (profile) {
     result.push(profile);
   } else if (seed) {
-    result.push("seeds", seed);
+    result.push("seeds", seed.host);
+
+    if (seed.port) {
+      result.push(seed.port);
+    }
   }
   result.push(urn);
 
@@ -154,6 +168,10 @@ export function path(opts: PathOptions): string {
 
     case ProjectContent.Commit:
       result.push("commits");
+      break;
+
+    case ProjectContent.Patches:
+      result.push("patches");
       break;
 
     default:
@@ -270,6 +288,10 @@ export class Project implements ProjectInfo {
     return api.get(`projects/${urn}/remotes/${peer}`, host);
   }
 
+  static async getPatches(urn: string, host: api.Host): Promise<Patch[]> {
+    return api.get(`projects/${urn}/patches`, {}, host);
+  }
+
   static async getRemotes(urn: string, host: api.Host): Promise<Peer[]> {
     return api.get(`projects/${urn}/remotes`, host);
   }
@@ -344,7 +366,13 @@ export class Project implements ProjectInfo {
     return path(options);
   }
 
-  static async get(id: string, peer: string | null, profileName: string | null, seedHost: string | null, config: Config): Promise<Project> {
+  static async get(
+    id: string,
+    peer: string | null,
+    profileName: string | null,
+    seedHost: api.Host | null,
+    config: Config
+  ): Promise<Project> {
     const profile = profileName ? await Profile.get(profileName, ProfileType.Project, config) : null;
     const seed = profile ? profile.seed : seedHost ? await Seed.lookup(seedHost, config) : null;
 

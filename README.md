@@ -1,6 +1,4 @@
-# Radicle Interface
-
-> ✨ Interact with Radicle.
+# Circle Interface ⚫
 
 ## Available Scripts
 

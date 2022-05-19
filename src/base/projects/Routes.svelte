@@ -9,6 +9,10 @@
 
 <!-- With a seed context -->
 
+<Route path="/seeds/:seed/:port/:id/*" let:params>
+  <View {config} seedHost={params.seed} seedPort={Number(params.port)} id={params.id} />
+</Route>
+
 <Route path="/seeds/:seed/:id/*" let:params>
   <View {config} seedHost={params.seed} id={params.id} />
 </Route>

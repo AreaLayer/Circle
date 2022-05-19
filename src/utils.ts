@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import md5 from "md5";
 import { BigNumber } from "ethers";
 import multibase from 'multibase';
 import multihashes from 'multihashes';
@@ -336,6 +337,13 @@ export function parseRadicleId(urn: string): string {
   return urn.replace(/^rad:[a-z]+:/, "");
 }
 
+// Get amount of days passed between two dates without including the end date
+export function getDaysPassed(from: Date, to: Date): number {
+  return Math.floor(
+    (to.getTime() - from.getTime()) / (24 * 60 * 60 * 1000)
+  );
+}
+
 // Decode a Radicle Id (URN).
 export function decodeRadicleId(urn: string): Uint8Array {
   const encoded = parseRadicleId(urn);
@@ -486,6 +494,15 @@ export function isMarkdownPath(path: string): boolean {
 export function isDomain(input: string): boolean {
   return (/^[a-z][a-z0-9.-]+$/.test(input) && /\.[a-z]+$/.test(input))
     || (! import.meta.env.PROD && /^0.0.0.0$/.test(input));
+}
+
+
+// Get the gravatar URL of an email.
+export function gravatarURL(email: string): string {
+  const address = email.trim().toLowerCase();
+  const hash = md5(address);
+
+  return `https://www.gravatar.com/avatar/${hash}`;
 }
 
 // Propose a Gnosis Safe multi-sig transaction.
