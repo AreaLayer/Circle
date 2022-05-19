@@ -7,6 +7,7 @@ import { Unreachable, assert, assertEq } from "@app/error";
 import type { TypedDataSigner } from '@ethersproject/abstract-signer';
 import type { WalletConnectSigner } from "./WalletConnectSigner";
 import * as ethers from "ethers";
+import type { SeedSession } from "./siwe";
 
 export enum Connection {
   Disconnected,
@@ -21,12 +22,7 @@ export type TxState =
   | { state: 'fail'; hash: string; blockHash: string; blockNumber: number; error: string }
   | null;
 
-// Definitions made in `Config` that need to be part of the session,
-// to provide reactivity based on events i.e. accountsChanged
-// TODO: Eventually there will be more reactive config needs, e.g. seeds
-export interface SessionConfig {
-  signer: ethers.Signer & TypedDataSigner | WalletConnectSigner | null;
-}
+export type Signer = ethers.Signer & TypedDataSigner | WalletConnectSigner;
 
 export type State =
     { connection: Connection.Disconnected }
@@ -35,7 +31,8 @@ export type State =
 
 export interface Session {
   address: string;
-  config: SessionConfig;
+  signer: Signer | null;
+  siwe: { [key: string]: SeedSession };
   tokenBalance: BigNumber | null; // `null` means it isn't loaded yet.
   tx: TxState;
 }
@@ -44,6 +41,7 @@ export interface Store extends Readable<State> {
   connectMetamask(config: Config): Promise<void>;
   connectWalletConnect(config: Config): Promise<void>;
   updateBalance(n: BigNumber): void;
+  connectSeed(seed: { id: string; session: SeedSession }): void;
   refreshBalance(config: Config): Promise<void>;
   setTxSigning(): void;
   setTxPending(tx: TransactionResponse): void;
@@ -53,6 +51,7 @@ export interface Store extends Readable<State> {
 
 export const loadState = (initial: State): Store => {
   const store = writable<State>(initial);
+  const siwe = loadSeedSessions();
 
   return {
     subscribe: store.subscribe,
@@ -62,9 +61,8 @@ export const loadState = (initial: State): Store => {
       // Re-connect using previous session.
       if (config.metamask.connected) {
         const metamask = config.metamask.session;
-        const sessionConfig = { signer: config.signer };
         const tokenBalance: BigNumber = await config.token.balanceOf(metamask.address);
-        const session = { tokenBalance, tx: null, config: sessionConfig, address: metamask.address };
+        const session = { tokenBalance, tx: null, siwe, signer: config.metamask.signer, address: metamask.address };
 
         store.set({ connection: Connection.Connected, session });
         config.setSigner(config.metamask.signer);
@@ -88,8 +86,7 @@ export const loadState = (initial: State): Store => {
         config.walletConnect.state.set({ state: "close" });
 
         const tokenBalance: BigNumber = await config.token.balanceOf(address);
-        const sessionConfig = { signer: config.signer };
-        const session = { config: sessionConfig, address, tokenBalance, tx: null };
+        const session = { address, signer: config.metamask.signer, siwe, tokenBalance, tx: null };
 
         store.set({
           connection: Connection.Connected,
@@ -111,9 +108,8 @@ export const loadState = (initial: State): Store => {
 
         const address = await signer.getAddress();
         const tokenBalance: BigNumber = await config.token.balanceOf(address);
-        const sessionConfig = { signer: config.signer };
-        const session = { config: sessionConfig, address, tokenBalance, tx: null };
-        const network = await ethers.providers.getNetwork(
+        const session = { address, signer, siwe, tokenBalance, tx: null };
+        const network = ethers.providers.getNetwork(
           signer.walletConnect.chainId
         );
 
@@ -161,6 +157,20 @@ export const loadState = (initial: State): Store => {
       }
     },
 
+    connectSeed: ({ id, session }: { id: string; session: SeedSession }) => {
+      store.update((s: State) => {
+        switch (s.connection) {
+          case Connection.Connected:
+            s.session.siwe[id] = session;
+            saveSession(s.session);
+
+            return s;
+          default:
+            return s;
+        }
+      });
+    },
+
     updateBalance: (n: BigNumber) => {
       store.update((s: State) => {
         assert(s.connection === Connection.Connected);
@@ -168,6 +178,7 @@ export const loadState = (initial: State): Store => {
           // If the token balance is loaded, we can update it, otherwise
           // we let it finish loading.
           s.session.tokenBalance = s.session.tokenBalance.add(n);
+          saveSession(s.session);
         }
         return s;
       });
@@ -255,7 +266,7 @@ export const loadState = (initial: State): Store => {
               disconnectMetamask();
             } else {
               s.session.address = address;
-              s.session.config = { signer: config.signer };
+              s.session.signer = config.signer;
               saveSession(s.session);
             }
             return s;
@@ -293,6 +304,26 @@ export async function changeAccounts(address: string): Promise<void> {
   state.refreshBalance(config);
 }
 
+export function loadSeedSessions(): { [key: string]: SeedSession } {
+  const siweStorage = localStorage.getItem("siwe");
+
+  if (siweStorage) {
+    const siwe: { [key: string]: SeedSession } = JSON.parse(siweStorage);
+
+    // We only keep the sessions that are still valid and remove expired from localStorage
+    const activeSessions = Object.fromEntries(Object.entries(siwe).filter(([, value]) => value.expiration_time > Date.now() / 1000));
+    window.localStorage.setItem("siwe", JSON.stringify({ ...activeSessions }));
+
+    return activeSessions;
+  }
+
+  return {};
+}
+
+export async function connectSeed(seedSession: { id: string; session: SeedSession }): Promise<void> {
+  state.connectSeed(seedSession);
+}
+
 state.subscribe(s => {
   console.log("session.state", s);
 });
@@ -324,7 +355,8 @@ export function disconnectWallet(config: Config): void {
 }
 
 function saveSession(session: Session): void {
-  window.localStorage.setItem("metamask", JSON.stringify({
-    ...session, tokenBalance: null, config: null
-  }));
+  const { address, tokenBalance, tx, siwe } = session;
+
+  window.localStorage.setItem("metamask", JSON.stringify({ address, tokenBalance, tx }));
+  window.localStorage.setItem("siwe", JSON.stringify({ ...siwe }));
 }
