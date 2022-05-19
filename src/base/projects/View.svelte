@@ -9,9 +9,12 @@
 
   export let id: string; // Project name or URN.
   export let seedHost: string | null = null;
+  export let seedPort: number | null = null;
   export let profileName: string | null = null; // Address or name of parent profile.
   export let peer: string | null = null;
   export let config: Config;
+
+  const host = seedHost ? { host: seedHost, port: seedPort } : null;
 </script>
 
 <style>
@@ -37,7 +40,7 @@
 </style>
 
 <main>
-  {#await Project.get(id, peer, profileName, seedHost, config)}
+  {#await Project.get(id, peer, profileName, host, config)}
     <header>
       <Loading center />
     </header>

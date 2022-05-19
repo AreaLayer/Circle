@@ -124,7 +124,7 @@ export interface BrowseTo {
 export interface PathOptions extends BrowseTo {
   urn: string;
   profile?: string | null;
-  seed?: string | null;
+  seed?: api.Host | null;
 }
 
 export function browse(browse: BrowseTo): void {
@@ -139,7 +139,11 @@ export function path(opts: PathOptions): string {
   if (profile) {
     result.push(profile);
   } else if (seed) {
-    result.push("seeds", seed);
+    result.push("seeds", seed.host);
+
+    if (seed.port) {
+      result.push(seed.port);
+    }
   }
   result.push(urn);
 
@@ -344,7 +348,13 @@ export class Project implements ProjectInfo {
     return path(options);
   }
 
-  static async get(id: string, peer: string | null, profileName: string | null, seedHost: string | null, config: Config): Promise<Project> {
+  static async get(
+    id: string,
+    peer: string | null,
+    profileName: string | null,
+    seedHost: api.Host | null,
+    config: Config
+  ): Promise<Project> {
     const profile = profileName ? await Profile.get(profileName, ProfileType.Project, config) : null;
     const seed = profile ? profile.seed : seedHost ? await Seed.lookup(seedHost, config) : null;
 

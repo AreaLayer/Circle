@@ -187,7 +187,7 @@
     {#if seed.api.host}
       <div
         class="stat seed"
-        on:click={() => navigate(`/seeds/${seed.api.host}`)}
+        on:click={() => navigate(seed.path)}
         title="Project data is fetched from this seed"
       >
         <span>{seed.api.host}</span>
