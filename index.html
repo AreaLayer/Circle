@@ -29,9 +29,10 @@
       import { Buffer } from "buffer";
       window.Buffer = Buffer;
     </script>
+		%svelte.head%
     <title>Circle Interface</title>
   </head>
   <body>
-    <script type="module" src="/src/index.ts"></script>
+		<div>%svelte.body%</div>
   </body>
 </html>

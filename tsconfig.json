@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
+	"extends": "./.svelte-kit/tsconfig.json",
   "include": [
     "src"
   ],
@@ -26,7 +26,10 @@
     "skipLibCheck": true,
     "paths": {
       "@public/*": ["./public/*"],
-      "@app/*": ["./src/*"],
+      "@app": ["src"],
+      "@app/*": ["src/*"],
+      "$lib":["src/lib"],
+      "$lib/*":["src/lib/*"]
     }
   },
   "noEmit": true

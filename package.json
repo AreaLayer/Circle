@@ -1,9 +1,10 @@
 {
   "version": "1.0.0",
   "scripts": {
-    "start": "vite",
-    "serve": "vite preview",
-    "build": "scripts/build",
+    "start": "svelte-kit dev",
+    "serve": "svelte-kit preview",
+    "build": "svelte-kit build",
+    "prepare": "svelte-kit sync",
     "check": "scripts/check",
     "coverage": "npx nyc report",
     "test:unit": "vitest run",
@@ -18,6 +19,8 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.12",
     "@cypress/vite-dev-server": "^2.2.2",
+    "@sveltejs/adapter-auto": "^1.0.0-next.34",
+    "@sveltejs/kit": "^1.0.0-next.306",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.36",
     "@testing-library/cypress": "^8.0.2",
     "@testing-library/svelte": "^3.1.0",
@@ -31,6 +34,7 @@
     "eslint-plugin-svelte3": "^3.2.0",
     "happy-dom": "^2.50.0",
     "svelte-check": "^2.4.1",
+    "svelte-preprocess": "^4.10.1",
     "typescript": "^4.2.4",
     "vite": "^2.7.13",
     "vite-plugin-istanbul": "^2.5.1",
@@ -66,7 +70,6 @@
     "sanitize-html": "^2.6.1",
     "siwe": "^1.1.6",
     "svelte": "^3.46.3",
-    "svelte-preprocess": "^4.7.2",
     "svelte-routing": "^1.6.0"
   }
 }
