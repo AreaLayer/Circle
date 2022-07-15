@@ -8,11 +8,11 @@ import { _TypedDataEncoder } from "ethers/lib/utils";
 import type { TypedDataDomain, TypedDataField } from "@ethersproject/abstract-signer";
 
 export class WalletConnectSigner extends ethers.Signer {
-  public walletConnect: WalletConnect;
+  public getAlby: GetAlby
   public readonly provider: ethers.providers.JsonRpcProvider;
 
   constructor(
-    walletConnect: WalletConnect,
+    getAlby: GetAlby,
     provider: ethers.providers.JsonRpcProvider,
   ) {
     super();
