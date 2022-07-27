@@ -20,7 +20,7 @@
   });
 
   const dispatch = createEventDispatcher();
-  const onClickConnect = () => { state.connectMetamask(config); };
+  const onClickConnect = () => { state.connectAlby(config); };
   const onClose = () => { dispatch("close"); };
 </script>
 
