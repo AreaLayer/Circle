@@ -98,7 +98,7 @@
     </div>
 
     <div slot="subtitle">
-      <p>The transaction to set the ENS name for <strong>{formatAddress(entity.address)}</strong>
+      <p>The transaction to set the LNURL  for <strong>{formatAddress(entity.address)}</strong>
       to <strong>{name}.{config.registrar.domain}</strong> was proposed to:</p>
       <p><Address address={org.owner} {config} compact /></p>
     </div>
@@ -144,9 +144,9 @@
         <strong>{formatAddress(org.owner)}</strong>,
         please sign the transaction in your wallet.
       {:else}
-        Set an ENS name for <strong>{formatAddress(entity.address)}</strong>
+        Set an LNURL  for <strong>{formatAddress(entity.address)}</strong>
         to associate a profile.
-        ENS profiles provide human-identifiable data to your {label}, such as a
+        LNURL profiles provide human-identifiable data to your {label}, such as a
         unique name, avatar and URL, and help make your {label} more discoverable.
       {/if}
     </div>
