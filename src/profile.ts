@@ -14,7 +14,7 @@ import type { Anchor, PendingAnchor } from "@app/project";
 export interface IProfile {
   address: string;
   type: AddressType;
-  ens?: EnsProfile;
+  LNURL?: LnurlProfile;
   idx?: BasicProfile;
   org?: Org;
 }
