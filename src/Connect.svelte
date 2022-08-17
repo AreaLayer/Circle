@@ -4,7 +4,7 @@
   import type { Err } from '@app/error';
   import Error from '@app/Error.svelte';
   import type { Config } from '@app/config';
-  import ConnectWallet from "@app/components/Modal/ConnectWallet.svelte";
+  import ConnectWallet from "@app/components/Modal/Alby.svelte";
 
   export let caption = "Connect";
   export let className = "";
@@ -48,8 +48,8 @@
   {/if}
 </button>
 
-{#if $walletConnectState.state === "open"}
-  <ConnectWallet {config} uri={$walletConnectState.uri} on:close={onModalClose} />
+{#if $Alby.state === "open"}
+  <ConnectWallet {config} uri={$Albystate.uri} on:close={onModalClose} />
 {:else if error}
   <Error floating emoji="👛" title="Connection failed" {error} on:close={() => error = null} />
 {/if}
