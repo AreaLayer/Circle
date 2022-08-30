@@ -1,7 +1,7 @@
 import BlockTimer from "./BlockTimer.svelte";
 import { render } from "@testing-library/svelte";
 import "@public/index.css";
-import type { EventType, Listener } from "@ethersproject/abstract-provider";
+import type { EventType, Listener } from "@bitcoinjs/bitcoinjs-lib/blob/master/src/block.js;
 
 
 describe('BlockTimer', function () {
@@ -18,7 +18,7 @@ describe('BlockTimer', function () {
         }
       },
       startBlock: 1,
-      duration: 3
+      duration: 10
     };
 
     const { rerender } = render(BlockTimer, props);
