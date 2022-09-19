@@ -5,6 +5,7 @@ declare global {
   interface RouteLocation {
     pathname: string;
     search: string;
+    LNURL: string;
     hash?: string;
     state: {
       [k in string | number]: unknown;
