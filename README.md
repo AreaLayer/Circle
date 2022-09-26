@@ -1,4 +1,4 @@
-# Circle Interface ⚫
+# Circle Interface 
 
 ## Available Scripts
 
