@@ -7,6 +7,7 @@ declare global {
     search: string;
     LNURL: string;
     hash?: string;
+    hastimelock: string
     state: {
       [k in string | number]: unknown;
     };
