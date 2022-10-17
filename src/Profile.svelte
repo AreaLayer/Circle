@@ -49,8 +49,8 @@
         const balance = await config.provider.getBalance(org.owner);
 
         if (! balance.isZero()) {
-          // To maintain the format we hardcode the BTC specs.
-          return [{ balance, decimals: 18, logo: "", name: "Ethereum", symbol: "ETH" }, ...tokens];
+          // To maintain the format we hardcode the BTC spec;
+          return [{ balance, decimals: 18, logo: "", name: "BTC", symbol: "BTC" }, ...tokens];
         } else {
           return tokens;
         }
