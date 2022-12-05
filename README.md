@@ -14,3 +14,10 @@ You will also see any lint errors in the console.
 
 Builds a static copy of your site to the `build/` folder.
 Your app is ready to be deployed!
+
+# To-Do
+
+- [ ] Testnet
+- [ ] Integration with LND
+- [ ] Mainnet
+- [ ] Fees
