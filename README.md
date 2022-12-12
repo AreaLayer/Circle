@@ -21,3 +21,4 @@ Your app is ready to be deployed!
 - [ ] Integration with LND
 - [ ] Mainnet
 - [ ] Fees
+- [ ] RGB and Lightning Network integration
