@@ -18,7 +18,7 @@ Your app is ready to be deployed!
 # To-Do
 
 - [ ] Testnet
-- [ ] Integration with LND
+- [ ] Integration with LND, CLN, LDK, LNP
 - [ ] Mainnet
 - [ ] Fees
 - [ ] RGB, Lightning Network and Nostr integration
