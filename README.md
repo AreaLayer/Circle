@@ -21,4 +21,4 @@ Your app is ready to be deployed!
 - [ ] Integration with LND, CLN, LDK, LNP
 - [ ] Mainnet
 - [ ] Fees
-- [ ] RGB, Lightning Network and Nostr integration
+- [ ] RGB, Lightning Network, Nostr and Storm integrations
