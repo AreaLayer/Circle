@@ -46,7 +46,7 @@ Responses are sent back to the  GitCircleClient in the form of Nostr messages to
 
 # GitStorageCircle
 
-This is a stardan git storage with modifications to make it communcate over Storm. The main difference is that the server stay on Carbonado.
+This is a standard git storage with modifications to make it communcate over Storm. The main difference is that the server stay on Carbonado.
 Instead, to be present in a web client like central data center
 
 # Client-Circle
