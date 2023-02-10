@@ -22,7 +22,9 @@ Your app is ready to be deployed!
 The implementation is composed of three parts:
 
 GitCircleClient - A local git client executable that runs on a developer machine on Storm
+
 GitServerCircle - A “hidden” git server that listens to private messages sent via Storm
+
 GitStorageCircle - A storage based Carbonado for archieve chats and repositories
 
 # GitCircleClient
@@ -31,7 +33,7 @@ This is a standard git client with modifications to make it communicate over Sto
 User id: user id is the Storm id of the user.
 Git Pull request: 
 Initiate a fetch request by sending a private message to a Storm user that represents a GitServerCircle
-Get requested data from NGitServerCircle  in the form of private Storm
+Get requested data from GitServerCircle  in the form of private Storm
 Do local merge “regularly”
 Push by sending Storm messages to theGitServerCircle Storm Id
 
