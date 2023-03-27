@@ -43,8 +43,8 @@ Instead, to be present in a web client like central data center
 
 # To-Do
 
-- [ ] Testnet
+- [X] Testnet
 - [ ] Integration with LND, CLN, LDK, LNP
 - [ ] Mainnet
-- [ ] Fees
+- [X] Fees
 - [ ] RGB, Lightning Network, Nostr and Storm integrations
