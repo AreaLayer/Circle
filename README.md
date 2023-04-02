@@ -47,4 +47,4 @@ Instead, to be present in a web client like central data center
 - [ ] Integration with LND, CLN, LDK, LNP
 - [ ] Mainnet
 - [X] Fees
-- [ ] RGB, Lightning Network, Nostr and Storm integrations
+- [X] RGB, Lightning Network, Nostr and Storm integrations
