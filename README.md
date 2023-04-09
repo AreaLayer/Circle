@@ -2,7 +2,6 @@
 
 "Github" on Bitcoin powered by Carbonado, RGB, Lightning Network and Nostr
 
-## How works?
 
 # High-level implementation design
 
